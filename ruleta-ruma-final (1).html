@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎁 Ruleta de Premios - Ruma Store</title>
+    
+    <!-- Google Fonts - Anime Style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Righteous&family=Bungee&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            padding: 30px 10px 50px 10px;
+            position: relative;
+            background: #1a1a2e;
+        }
+
+        html {
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+
+        /* Fondo degradado base con colores anime - OPTIMIZADO para contraste con header dorado */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                #0a0e27 0%,      /* Azul muy oscuro */
+                #1a1a3e 25%,     /* Azul profundo */ 
+                #2d1b69 50%,     /* Morado oscuro */
+                #1a237e 75%,     /* Azul índigo */
+                #0a0e27 100%);   /* Azul muy oscuro */
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Capa de personajes bailando */
+        .dancing-characters {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .character {
+            position: absolute;
+            font-size: 80px;
+            animation: dance 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+            bottom: 0;
+        }
+
+        @keyframes dance {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            25% { 
+                transform: translateY(-30px) rotate(-5deg) scale(1.1);
+            }
+            50% { 
+                transform: translateY(-50px) rotate(5deg) scale(1.05);
+            }
+            75% { 
+                transform: translateY(-30px) rotate(-5deg) scale(1.1);
+            }
+        }
+
+        .character:nth-child(1) { left: 5%; animation-delay: 0s; }
+        .character:nth-child(2) { left: 13%; animation-delay: 0.2s; }
+        .character:nth-child(3) { left: 21%; animation-delay: 0.4s; }
+        .character:nth-child(4) { left: 29%; animation-delay: 0.6s; }
+        .character:nth-child(5) { left: 37%; animation-delay: 0.8s; }
+        .character:nth-child(6) { left: 45%; animation-delay: 1s; }
+        .character:nth-child(7) { left: 53%; animation-delay: 1.2s; }
+        .character:nth-child(8) { left: 61%; animation-delay: 1.4s; }
+        .character:nth-child(9) { left: 69%; animation-delay: 1.6s; }
+        .character:nth-child(10) { left: 77%; animation-delay: 1.8s; }
+        .character:nth-child(11) { left: 85%; animation-delay: 2s; }
+        .character:nth-child(12) { left: 93%; animation-delay: 2.2s; }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Estrellas estilo anime */
+        .stars-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            clip-path: polygon(
+                50% 0%, 61% 35%, 98% 35%, 68% 57%, 
+                79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+            );
+            animation: twinkle 3s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+        }
+
+        /* Líneas de velocidad estilo anime */
+        .speed-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .speed-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 215, 0, 0.5) 50%, 
+                transparent 100%);
+            animation: speedMove 2s linear infinite;
+        }
+
+        @keyframes speedMove {
+            0% { transform: translateX(-100%); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateX(200%); opacity: 0; }
+        }
+
+        /* Partículas brillantes estilo anime */
+        .sparkles-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            background: radial-gradient(circle, 
+                rgba(255, 215, 0, 1) 0%, 
+                rgba(255, 165, 0, 0.8) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            animation: sparkleFloat 4s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% { 
+                transform: translateY(0) scale(1); 
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            50% { 
+                transform: translateY(-100px) scale(1.5); 
+                opacity: 0.8;
+            }
+            90% { opacity: 1; }
+        }
+
+        /* Capa de personajes de anime VISIBLE */
+        .anime-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 4;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .anime-character {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.4;
+            animation: float 15s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)) 
+                    drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(-60px) rotate(-5deg);
+            }
+            75% {
+                transform: translateY(-30px) rotate(5deg);
+            }
+        }
+
+        /* Patrón de puntos animado estilo anime */
+        .dots-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, rgba(255, 255, 255, 0.2) 2px, transparent 2px),
+                radial-gradient(circle, rgba(147, 51, 234, 0.15) 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px;
+            background-position: 0 0, 25px 25px;
+            animation: scrollDots 30s linear infinite;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        @keyframes scrollDots {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        .container {
+            text-align: center;
+            max-width: 750px;
+            width: 100%;
+            position: relative;
+            z-index: 20;
+            margin: 0 auto;
+            padding-bottom: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            backdrop-filter: blur(15px);
+            padding: 30px 25px;
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Iconos de anime sutiles en el fondo del header */
+        .header::before {
+            content: '⚡🔥💫⭐🌟✨💥🎌🎯🎪🎭🎨🎬🎤🎸🎮';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: 80px;
+            opacity: 0.08;
+            letter-spacing: 50px;
+            line-height: 1.5;
+            pointer-events: none;
+            word-wrap: break-word;
+            overflow: hidden;
+            color: #764ba2;
+        }
+
+        /* Patrón de puntos sutil */
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, rgba(118, 75, 162, 0.1) 2px, transparent 2px);
+            background-size: 25px 25px;
+            pointer-events: none;
+        }
+
+        .logo-container {
+            position: relative;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .logo-img {
+            max-width: 300px;
+            height: auto;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+        }
+
+        /* Decoración navideña animada */
+        .christmas-lights {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .light {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        .light:nth-child(1) { background: #ff0000; animation-delay: 0s; }
+        .light:nth-child(2) { background: #00ff00; animation-delay: 0.3s; }
+        .light:nth-child(3) { background: #0000ff; animation-delay: 0.6s; }
+        .light:nth-child(4) { background: #ffff00; animation-delay: 0.9s; }
+        .light:nth-child(5) { background: #ff00ff; animation-delay: 1.2s; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px currentColor; }
+            50% { opacity: 0.3; }
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 38px;
+            margin-bottom: 12px;
+            font-weight: bold;
+            text-shadow: 
+                3px 3px 0px rgba(255, 255, 255, 0.8),
+                -1px -1px 0px rgba(255, 255, 255, 0.8),
+                1px -1px 0px rgba(255, 255, 255, 0.8),
+                -1px 1px 0px rgba(255, 255, 255, 0.8),
+                4px 4px 8px rgba(0,0,0,0.3);
+            font-family: 'Bangers', cursive;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+            transform: rotate(-2deg);
+            display: inline-block;
+        }
+
+        .subtitle {
+            color: #764ba2;
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Righteous', cursive;
+            position: relative;
+            z-index: 1;
+            text-shadow: 
+                1px 1px 0px rgba(255, 255, 255, 0.9),
+                2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+        }
+
+        .wheel-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            padding: 40px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            border-left: 3px solid rgba(255, 255, 255, 0.5);
+            border-right: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 22px solid transparent;
+            border-right: 22px solid transparent;
+            border-top: 38px solid #ff4757;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
+            z-index: 100;
+        }
+
+        #wheelCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 12px 35px rgba(0,0,0,0.35));
+        }
+
+        .spin-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 55px;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .spin-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .spin-button:hover::after {
+            width: 400px;
+            height: 400px;
+        }
+
+        .spin-button:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.8);
+        }
+
+        .spin-button:active:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .spin-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            padding: 35px 25px;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-top: none;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .prize-emoji {
+            font-size: 64px;
+            margin-bottom: 15px;
+            animation: bounceIn 0.7s ease;
+        }
+
+        .result-text {
+            font-size: 28px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 10px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .result-subtitle {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, rgba(255,215,0,0.95) 0%, rgba(255,165,0,0.95) 100%);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            color: #764ba2;
+            font-size: 19px;
+            font-weight: bold;
+            font-family: 'Righteous', cursive;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modal para screenshot del premio */
+        .prize-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .prize-modal.active {
+            display: flex;
+        }
+
+        .prize-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            border: 5px solid #667eea;
+            position: relative;
+            animation: slideUp 0.5s ease;
+            overflow: hidden;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .prize-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .prize-card-content {
+            padding: 40px 30px 30px 30px;
+        }
+
+        .prize-card-emoji {
+            font-size: 120px;
+            margin: 0 0 20px 0;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .prize-card-text {
+            font-size: 42px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0 0 25px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .prize-card-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin: 0 0 25px 0;
+            line-height: 1.6;
+        }
+
+        .prize-card-footer {
+            background: #f8f9fa;
+            padding: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .prize-card-footer img {
+            max-width: 180px;
+            margin-bottom: 10px;
+        }
+
+        .prize-card-footer-text {
+            font-size: 14px;
+            color: #999;
+            margin: 0;
+        }
+
+        .modal-buttons {
+            padding: 20px 30px 30px 30px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .share-whatsapp-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .share-whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .close-modal-btn {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .close-modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px 40px 10px;
+            }
+            h1 { font-size: 28px; letter-spacing: 2px; }
+            .subtitle { font-size: 16px; }
+            .spin-button { padding: 16px 40px; font-size: 18px; }
+            .wheel-section { padding: 25px 15px; }
+            .logo-img { max-width: 220px; }
+            .instructions { font-size: 16px; padding: 16px; }
+            .anime-character { font-size: 45px; }
+            .star { 
+                width: 8px !important; 
+                height: 8px !important; 
+            }
+            .sparkle {
+                width: 4px !important;
+                height: 4px !important;
+            }
+            .speed-line {
+                height: 1px;
+            }
+            .dancing-characters {
+                height: 120px;
+            }
+            .character {
+                font-size: 50px;
+            }
+            
+            /* Modal responsive */
+            .prize-modal {
+                padding: 10px;
+            }
+            .prize-card {
+                width: 100%;
+            }
+            .prize-card-header {
+                font-size: 20px;
+                padding: 20px 15px;
+            }
+            .prize-card-content {
+                padding: 30px 20px 25px 20px;
+            }
+            .prize-card-emoji {
+                font-size: 90px;
+            }
+            .prize-card-text {
+                font-size: 32px;
+            }
+            .prize-card-subtitle {
+                font-size: 16px;
+            }
+            .prize-card-footer {
+                padding: 15px;
+            }
+            .prize-card-footer img {
+                max-width: 150px;
+            }
+            .modal-buttons {
+                padding: 15px 20px 25px 20px;
+                flex-direction: column;
+            }
+            .share-whatsapp-btn,
+            .close-modal-btn {
+                width: 100%;
+                padding: 14px 25px;
+                font-size: 15px;
+            }
+        }
+
+        /* Tablets Portrait (601px - 768px) */
+        @media (min-width: 601px) and (max-width: 768px) {
+            .container {
+                max-width: 650px;
+            }
+            h1 { font-size: 28px; }
+            .subtitle { font-size: 16px; }
+            .wheel-section { padding: 30px 20px; }
+            #wheelCanvas {
+                max-width: 450px;
+            }
+            .prize-card {
+                max-width: 550px;
+            }
+            .prize-card-emoji {
+                font-size: 100px;
+            }
+            .prize-card-text {
+                font-size: 36px;
+            }
+        }
+
+        /* Tablets Landscape (769px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                max-width: 700px;
+            }
+            .prize-card {
+                max-width: 550px;
+            }
+        }
+
+        /* Touch devices optimization */
+        @media (hover: none) and (pointer: coarse) {
+            .spin-button,
+            .share-whatsapp-btn,
+            .close-modal-btn {
+                min-height: 48px;
+                padding: 16px 35px;
+            }
+        }
+
+        /* Landscape orientation on small devices */
+        @media (max-width: 900px) and (orientation: landscape) {
+            body {
+                padding: 15px 10px 25px 10px;
+            }
+            .header {
+                padding: 20px 20px;
+            }
+            .wheel-section {
+                padding: 20px 15px;
+            }
+            .anime-character {
+                font-size: 35px;
+            }
+            .prize-modal {
+                align-items: flex-start;
+                padding-top: 20px;
+                overflow-y: auto;
+            }
+            .prize-card {
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondos animados estilo anime -->
+    <div class="gradient-bg"></div>
+    <div class="stars-layer" id="starsLayer"></div>
+    <div class="speed-lines" id="speedLines"></div>
+    <div class="sparkles-layer" id="sparklesLayer"></div>
+    <div class="anime-layer" id="animeLayer"></div>
+    <div class="dots-pattern"></div>
+    
+    <!-- Personajes de anime bailando -->
+    <div class="dancing-characters" id="dancingCharacters"></div>
+
+    <div class="container">
+        <div class="instructions">
+            🎁 ¡Gira la ruleta y gana increíbles premios con Rumita! 🎊
+        </div>
+
+        <div class="header">
+            <div class="christmas-lights">
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+                <div class="light"></div>
+            </div>
+            <div class="logo-container">
+                <img src="logo-ruma.png" 
+                     alt="Ruma Store" class="logo-img" 
+                     onerror="this.style.display='none'; document.getElementById('textLogo').style.display='block';">
+                <div id="textLogo" style="display:none; font-family: 'Bangers', cursive; font-size: 52px; font-weight: bold; color: #764ba2; text-shadow: 3px 3px 0px rgba(255,255,255,0.8), -1px -1px 0px rgba(255,255,255,0.8), 1px -1px 0px rgba(255,255,255,0.8), -1px 1px 0px rgba(255,255,255,0.8), 4px 4px 8px rgba(0,0,0,0.3); letter-spacing: 3px; transform: rotate(-2deg); display: inline-block;">RUMA STORE</div>
+            </div>
+            <h1>🎯 Ruleta de Premios fin de año 2025!</h1>
+            <p class="subtitle">¡Gira y gana premios exclusivos de tus animes favoritos!</p>
+        </div>
+
+        <div class="wheel-section">
+            <div class="wheel-wrapper">
+                <div class="pointer"></div>
+                <canvas id="wheelCanvas" width="500" height="500"></canvas>
+            </div>
+            <button class="spin-button" id="spinBtn" onclick="spinWheel()">
+                🎰 GIRAR RULETA
+            </button>
+        </div>
+
+        <div class="result-section">
+            <div id="resultDisplay">
+                <p style="color: #999; font-size: 17px;">Presiona el botón para girar la ruleta 🎲</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar premio (screenshot friendly) -->
+    <div class="prize-modal" id="prizeModal">
+        <div class="prize-card" id="prizeCard">
+            <div class="prize-card-header">
+                🎊 ¡FELICITACIONES! 🎊
+            </div>
+            <div class="prize-card-content">
+                <div class="prize-card-emoji" id="modalEmoji"></div>
+                <div class="prize-card-text" id="modalPrize"></div>
+                <div class="prize-card-subtitle">
+                    📸 Toma un screenshot de esta pantalla<br>
+                    y preséntalo en <strong>Ruma Store</strong> para reclamar tu premio
+                </div>
+            </div>
+            <div class="prize-card-footer">
+                <img src="https://assets.jumpseller.com/store/ruma-store/themes/919719/settings/8c3781c8fcf432fe3a89/logo%20ruma.png?1761754519" 
+                     alt="Ruma Store"
+                     onerror="this.style.display='none'">
+                <div class="prize-card-footer-text">Válido hasta el 31 de Diciembre 2025</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="share-whatsapp-btn" onclick="shareWhatsApp()">
+                    <span>📱</span> Compartir por WhatsApp
+                </button>
+                <button class="close-modal-btn" onclick="closeModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURACIÓN DE EXPIRACIÓN
+        // ========================================
+        const EXPIRATION_CONFIG = {
+            enabled: true,
+            expirationDate: '2025-12-31T23:59:59', // Formato: YYYY-MM-DDTHH:MM:SS
+            message: {
+                title: '🎊 Promoción Finalizada',
+                subtitle: 'Esta promoción ha terminado. ¡Gracias por participar!',
+                cta: 'Visita nuestra tienda para ver las promociones actuales'
+            }
+        };
+
+        // Verificar si la promoción ha expirado
+        function checkExpiration() {
+            if (!EXPIRATION_CONFIG.enabled) return false;
+            
+            const now = new Date();
+            const expiration = new Date(EXPIRATION_CONFIG.expirationDate);
+            
+            return now > expiration;
+        }
+
+        function showExpirationMessage() {
+            // Ocultar instrucciones y ruleta
+            document.querySelector('.instructions').style.display = 'none';
+            document.querySelector('.wheel-section').style.display = 'none';
+            
+            // Mostrar mensaje de expiración
+            const resultSection = document.querySelector('.result-section');
+            resultSection.innerHTML = `
+                <div style="padding: 40px 20px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">⏰</div>
+                    <div style="font-size: 28px; font-weight: bold; color: #764ba2; margin-bottom: 15px;">
+                        ${EXPIRATION_CONFIG.message.title}
+                    </div>
+                    <div style="font-size: 18px; color: #666; margin-bottom: 20px; line-height: 1.6;">
+                        ${EXPIRATION_CONFIG.message.subtitle}
+                    </div>
+                    <div style="font-size: 16px; color: #999;">
+                        ${EXPIRATION_CONFIG.message.cta}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Verificar expiración al cargar
+        if (checkExpiration()) {
+            window.addEventListener('DOMContentLoaded', showExpirationMessage);
+        }
+
+        // ========================================
+        // CÓDIGO PRINCIPAL DE LA RULETA
+        // ========================================
+        
+        // Crear personajes de anime flotantes VISIBLES
+        const animeLayer = document.getElementById('animeLayer');
+        
+        // Emojis de los mejores animes del año
+        const animeEmojis = [
+            // Naruto
+            '🦊', '🍥', '👁️', '⚡', '🔥', '🌀',
+            // One Piece  
+            '👒', '⚔️', '🏴‍☠️', '💀', '🌊', '🍖',
+            // Demon Slayer
+            '⚔️', '🌸', '🦋', '🐗', '💧', '☀️',
+            // Solo Leveling
+            '👤', '⚡', '🗡️', '👑', '💎', '👁️',
+            // Dragon Ball
+            '🐉', '⭐', '💫', '🔮', '☁️', '💪',
+            // Attack on Titan
+            '🧱', '⚔️', '🗡️', '💪', '🦅', '🛡️',
+            // Jujutsu Kaisen
+            '👁️', '🌀', '⚡', '👹', '🔯', '💀',
+            // My Hero Academia
+            '💥', '🦸', '⚡', '🔥', '❄️', '⭐',
+            // Bleach
+            '⚔️', '💀', '👁️', '⚡', '🌙', '👻',
+            // Hunter x Hunter
+            '🎣', '⚡', '🃏', '👁️', '🦂', '🎯'
+        ];
+
+        // Crear 60 personajes flotantes en posiciones aleatorias
+        for (let i = 0; i < 60; i++) {
+            const char = document.createElement('div');
+            char.className = 'anime-character';
+            char.textContent = animeEmojis[Math.floor(Math.random() * animeEmojis.length)];
+            
+            // Posición aleatoria
+            char.style.left = Math.random() * 100 + '%';
+            char.style.top = Math.random() * 100 + '%';
+            
+            // Delay aleatorio para animación
+            char.style.animationDelay = Math.random() * 5 + 's';
+            char.style.animationDuration = (10 + Math.random() * 10) + 's';
+            
+            // Opacidad variable
+            char.style.opacity = 0.2 + Math.random() * 0.3;
+            
+            animeLayer.appendChild(char);
+        }
+
+        // Crear estrellas estilo anime
+        const starsLayer = document.getElementById('starsLayer');
+        for (let i = 0; i < 30; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            const size = 10 + Math.random() * 20;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.animationDuration = (2 + Math.random() * 2) + 's';
+            
+            starsLayer.appendChild(star);
+        }
+
+        // Crear líneas de velocidad estilo anime
+        const speedLines = document.getElementById('speedLines');
+        for (let i = 0; i < 15; i++) {
+            const line = document.createElement('div');
+            line.className = 'speed-line';
+            
+            line.style.width = (30 + Math.random() * 70) + '%';
+            line.style.top = Math.random() * 100 + '%';
+            line.style.left = '-20%';
+            line.style.animationDelay = Math.random() * 2 + 's';
+            line.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+            
+            speedLines.appendChild(line);
+        }
+
+        // Crear partículas brillantes estilo anime
+        const sparklesLayer = document.getElementById('sparklesLayer');
+        for (let i = 0; i < 25; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            
+            const size = 4 + Math.random() * 8;
+            sparkle.style.width = size + 'px';
+            sparkle.style.height = size + 'px';
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.bottom = '-10%';
+            sparkle.style.animationDelay = Math.random() * 4 + 's';
+            sparkle.style.animationDuration = (3 + Math.random() * 2) + 's';
+            
+            sparklesLayer.appendChild(sparkle);
+        }
+
+        // Crear personajes de anime bailando en la parte inferior
+        const dancingCharacters = document.getElementById('dancingCharacters');
+        const characters = [
+            // Personajes icónicos con sus características visuales
+            { emoji: '🦊🧡', name: 'Naruto' },      // Zorro naranja = Naruto
+            { emoji: '🥋🟠', name: 'Goku' },        // Gi naranja = Goku
+            { emoji: '⚔️🌸', name: 'Tanjiro' },    // Espada + Flor = Tanjiro
+            { emoji: '👒🏴‍☠️', name: 'Luffy' },       // Sombrero de paja = Luffy
+            { emoji: '⚡👁️', name: 'Sasuke' },      // Rayo + Sharingan = Sasuke
+            { emoji: '🦸💥', name: 'Deku' },        // Héroe + Explosión = Deku
+            { emoji: '🗡️⚡', name: 'Zenitsu' },    // Espada + Rayo = Zenitsu
+            { emoji: '🔥🌊', name: 'Todoroki' },   // Fuego + Agua = Todoroki
+            { emoji: '👊💪', name: 'Saitama' },    // Puño calvo = Saitama
+            { emoji: '🎸✨', name: 'Miku' },       // Guitarra = Miku
+            { emoji: '🐉💫', name: 'Vegeta' },     // Dragon + Estrella = Vegeta
+            { emoji: '🌀👁️', name: 'Kakashi' }     // Remolino + Ojo = Kakashi
+        ];
+
+        // Crear más personajes para llenar el espacio
+        for (let i = 0; i < 12; i++) {
+            const char = document.createElement('div');
+            char.className = 'character';
+            char.innerHTML = characters[i].emoji;
+            char.style.animationDuration = (1.5 + Math.random() * 1) + 's';
+            char.title = characters[i].name; // Tooltip con el nombre
+            dancingCharacters.appendChild(char);
+        }
+
+        // Ruleta de premios
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        const resultDisplay = document.getElementById('resultDisplay');
+
+        // Logo SVG de Ruma embebido (optimizado)
+        const logoSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+            <defs>
+                <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#764ba2;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="url(#purpleGrad)"/>
+            <text x="50" y="42" font-family="Arial Black, sans-serif" font-size="32" font-weight="900" fill="#FFD700" text-anchor="middle" dominant-baseline="middle">RUMA</text>
+            <rect x="20" y="52" width="60" height="18" rx="9" fill="#FFD700" stroke="#667eea" stroke-width="2"/>
+            <text x="50" y="61" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#764ba2" text-anchor="middle" dominant-baseline="middle">store</text>
+        </svg>`;
+
+        const logoImage = new Image();
+        const blob = new Blob([logoSVG], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        logoImage.src = url;
+        let logoLoaded = false;
+        
+        logoImage.onload = function() {
+            logoLoaded = true;
+            drawWheel();
+        };
+        
+        logoImage.onerror = function() {
+            logoLoaded = false;
+            drawWheel();
+        };
+
+        const prizes = [
+            { name: '10% OFF', color: '#FF6B9D', emoji: '💰' },
+            { name: '5% OFF', color: '#4ECDC4', emoji: '💰' },
+            { name: '20% OFF', color: '#FFE66D', emoji: '💰' },
+            { name: 'Hot Wheels Gratis', color: '#95E1D3', emoji: '🏎️' },
+            { name: '5 soles de dscto', color: '#FF6B6B', emoji: '💰' },
+            { name: 'Envío Gratis', color: '#C44569', emoji: '📦' },
+            { name: '10 soles de dscto', color: '#F38181', emoji: '💰' },
+            { name: '5 soles de dscto', color: '#AA96DA', emoji: '💰' },
+            { name: '15% OFF', color: '#FCBAD3', emoji: '💰' },
+            { name: 'Protector Gratis', color: '#A8E6CF', emoji: '🛡️' }
+        ];
+
+        const numPrizes = prizes.length;
+        const sliceAngle = (2 * Math.PI) / numPrizes;
+        let currentRotation = 0;
+        let isSpinning = false;
+        let hasSpun = false;
+        let currentPrize = null;
+
+        // Verificar si ya giró antes (localStorage)
+        const STORAGE_KEY = 'ruma_ruleta_spin';
+        
+        function checkPreviousSpin() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    hasSpun = true;
+                    currentPrize = data.prize;
+                    
+                    // Deshabilitar botón permanentemente
+                    spinBtn.disabled = true;
+                    spinBtn.textContent = '✅ YA GIRASTE';
+                    spinBtn.style.opacity = '0.7';
+                    spinBtn.style.cursor = 'not-allowed';
+                    
+                    // Mostrar resultado previo
+                    resultDisplay.innerHTML = `
+                        <div class="prize-emoji">${data.prize.emoji}</div>
+                        <div class="result-text">¡Ganaste: ${data.prize.name}!</div>
+                        <div class="result-subtitle">🎊 Ya usaste tu oportunidad 🎊</div>
+                    `;
+                    
+                    return true;
+                } catch (e) {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            }
+            return false;
+        }
+
+        function saveSpin(prize) {
+            const data = {
+                prize: prize,
+                timestamp: new Date().toISOString(),
+                device: navigator.userAgent
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function closeModal() {
+            document.getElementById('prizeModal').classList.remove('active');
+        }
+
+        async function shareWhatsApp() {
+            const prizeText = currentPrize ? currentPrize.name : 'un premio increíble';
+            const message = `🎊 ¡Gané ${prizeText} en Ruma Store! 🎁\n\n🎯 Participa tú también en la Ruleta de Premios de Ruma Store y gana premios increíbles.\n\n✨ Válido hasta el 31 de Diciembre 2025`;
+            
+            // Try Web Share API first (works on mobile)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: '🎊 ¡Gané en Ruma Store!',
+                        text: message
+                    });
+                    return;
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        // Share cancelled or failed - silent fail
+                    }
+                }
+            }
+            
+            // Fallback: Open WhatsApp Web with message
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function drawWheel() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 230;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < numPrizes; i++) {
+                const startAngle = i * sliceAngle + currentRotation;
+                const endAngle = startAngle + sliceAngle;
+
+                // Segmento
+                ctx.beginPath();
+                ctx.fillStyle = prizes[i].color;
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fill();
+
+                // Borde
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Texto horizontal optimizado
+                const textAngle = startAngle + sliceAngle / 2;
+                const textX = centerX + Math.cos(textAngle) * (radius * 0.65);
+                const textY = centerY + Math.sin(textAngle) * (radius * 0.65);
+
+                ctx.save();
+                ctx.fillStyle = '#ffffff';
+                
+                // Ajustar tamaño de fuente según longitud del texto
+                const text = prizes[i].name;
+                let fontSize = 17;
+                if (text.length > 15) fontSize = 14;
+                if (text.length > 18) fontSize = 12;
+                
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                // Dividir texto inteligentemente
+                const words = text.split(' ');
+                if (words.length === 1) {
+                    // Una sola palabra
+                    ctx.fillText(text, textX, textY);
+                } else if (words.length === 2) {
+                    // Dos palabras - una arriba, otra abajo
+                    ctx.fillText(words[0], textX, textY - 9);
+                    ctx.fillText(words[1], textX, textY + 9);
+                } else if (words.length === 3) {
+                    // Tres palabras
+                    if (text.includes('soles de')) {
+                        // Caso especial: "X soles de dscto"
+                        ctx.fillText(words[0] + ' ' + words[1], textX, textY - 9);
+                        ctx.fillText(words[2] + ' ' + words[3], textX, textY + 9);
+                    } else {
+                        ctx.fillText(words[0], textX, textY - 11);
+                        ctx.fillText(words[1] + ' ' + words[2], textX, textY + 11);
+                    }
+                } else {
+                    // Más de tres palabras
+                    ctx.fillText(words.slice(0, 2).join(' '), textX, textY - 9);
+                    ctx.fillText(words.slice(2).join(' '), textX, textY + 9);
+                }
+                ctx.restore();
+
+                // Emoji más grande y prominente
+                const emojiX = centerX + Math.cos(textAngle) * (radius * 0.87);
+                const emojiY = centerY + Math.sin(textAngle) * (radius * 0.87);
+                ctx.save();
+                ctx.font = '34px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 4;
+                ctx.fillText(prizes[i].emoji, emojiX, emojiY);
+                ctx.restore();
+            }
+
+            // Centro con logo de Ruma
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 50);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(centerX, centerY, 50, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 7;
+            ctx.stroke();
+
+            // Dibujar logo SVG de Ruma en el centro
+            if (logoLoaded && logoImage.complete) {
+                const logoSize = 80;
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 47, 0, 2 * Math.PI);
+                ctx.clip();
+                ctx.drawImage(
+                    logoImage,
+                    centerX - logoSize / 2,
+                    centerY - logoSize / 2,
+                    logoSize,
+                    logoSize
+                );
+                ctx.restore();
+            } else {
+                // Fallback a texto si no carga la imagen
+                ctx.fillStyle = '#FFD700';
+                ctx.font = 'bold 28px Arial Black';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 4;
+                ctx.fillText('RUMA', centerX, centerY);
+            }
+        }
+
+        function spinWheel() {
+            // Verificar expiración primero
+            if (checkExpiration()) {
+                showExpirationMessage();
+                return;
+            }
+            
+            if (isSpinning || hasSpun) return;
+
+            hasSpun = true;
+            isSpinning = true;
+            spinBtn.disabled = true;
+            spinBtn.textContent = '✅ YA GIRASTE';
+            resultDisplay.innerHTML = '<p style="color: #999; font-size: 19px;">🎰 Girando la ruleta...</p>';
+
+            const spins = 5 + Math.random() * 3;
+            const extraDegrees = Math.random() * 360;
+            const totalRotation = (spins * 360 + extraDegrees) * (Math.PI / 180);
+            const duration = 4000;
+            const startTime = Date.now();
+            const startRotation = currentRotation;
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                currentRotation = startRotation + totalRotation * easeOut;
+                drawWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    const normalizedRotation = currentRotation % (2 * Math.PI);
+                    const pointerAngle = (3 * Math.PI / 2);
+                    const adjustedAngle = (pointerAngle - normalizedRotation + 2 * Math.PI) % (2 * Math.PI);
+                    const winningIndex = Math.floor(adjustedAngle / sliceAngle) % numPrizes;
+                    const winner = prizes[winningIndex];
+                    currentPrize = winner;
+                    
+                    // Guardar en localStorage permanentemente
+                    saveSpin(winner);
+
+                    setTimeout(() => {
+                        // Mostrar modal con el premio
+                        document.getElementById('modalEmoji').textContent = winner.emoji;
+                        document.getElementById('modalPrize').textContent = winner.name;
+                        document.getElementById('prizeModal').classList.add('active');
+                        
+                        resultDisplay.innerHTML = `
+                            <div class="prize-emoji">${winner.emoji}</div>
+                            <div class="result-text">¡Ganaste: ${winner.name}!</div>
+                            <div class="result-subtitle">🎊 Ver tu premio arriba 🎊</div>
+                        `;
+                        isSpinning = false;
+                        
+                        // Deshabilitar permanentemente
+                        spinBtn.style.opacity = '0.7';
+                        spinBtn.style.cursor = 'not-allowed';
+                    }, 500);
+                }
+            }
+            animate();
+        }
+
+        drawWheel();
+        window.addEventListener('resize', drawWheel);
+        
+        // Verificar si ya giró anteriormente (incluso después de F5)
+        checkPreviousSpin();
+    </script>
+
+</body>
+</html>
